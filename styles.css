@@ -1,0 +1,60 @@
+* {
+    box-sizing: border-box;
+}
+
+.main_container {
+    position: relative;
+    display: inline-block;
+}
+
+.main_container_header {
+    position: absolute;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding: 20px;
+}
+
+.healthBar {
+    position: relative;
+    height: 30px;
+    width: 100%;
+}
+
+.greyHealth {
+    background-color: rgb(54, 54, 54);
+    height: 30px;
+}
+
+.currentHealth {
+    background: rgb(66, 224, 18);
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.timer {
+    border-radius: 25px;
+    background-color: red;
+    height: 70px;
+    width: 70px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#matchResultText {
+    position: absolute;
+    color: whitesmoke;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: xx-large;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}

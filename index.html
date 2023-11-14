@@ -1,0 +1,31 @@
+<head>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+    <!-- container div -->
+    <div class="main_container">
+        <div class="main_container_header">
+            <!-- player health -->
+            <div class="healthBar" style="display: flex; justify-content: flex-end;">
+                <div class="greyHealth" style="width: 100%;"></div>
+                <div class="currentHealth" id="playerHealth" style="width: 100%;"></div>
+            </div>
+            <!-- timer -->
+            <div class="timer" id="fightTimer">
+                Timer for the fight
+            </div>
+            <!-- enemy health -->
+            <div class="healthBar">
+                <div class="greyHealth"></div>
+                <div class="currentHealth" id="enemyHealth" style="left: 0;"></div>
+            </div>
+        </div>
+        <div id="matchResultText">
+            Match Results Text
+        </div>
+        <canvas></canvas>
+    </div>
+</body>
+
+<script src="index.js"></script>
