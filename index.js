@@ -10,70 +10,15 @@ context.fillRect(0, 0, canvas.width, canvas.height);
 
 const gravity = 0.7;
 
-// Defines object within the game
-class Sprite {
-    constructor({ position, velocity, color = 'red', offset }) {
-        this.position = position;
-        this.velocity = velocity;
-        this.height = 150;
-        this.width = 50;
-        this.lastKey;
-        this.attackBox = {
-            position: {
-                x: this.position.x,
-                y: this.position.y
-            },
-            offset,
-            width: 100,
-            height: 50
-        };
-        this.color = color;
-        this.isAttacking;
-        this.health = 100;
-    }
+const background = new Sprite({
+    position: {
+        x: 0,
+        y: 0
+    },
+    imageSrc: "./resources/BG_Forest.png"
+});
 
-    draw() {
-        // Character box
-        context.fillStyle = this.color;
-        context.fillRect(this.position.x, this.position.y, this.width, this.height);
-
-        // Attack box
-        if (this.isAttacking) {
-            context.fillStyle = 'yellow';
-            context.fillRect(
-                this.attackBox.position.x,
-                this.attackBox.position.y,
-                this.attackBox.width,
-                this.attackBox.height
-            )
-        }
-    }
-
-    update() {
-        this.draw();
-        this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
-        this.attackBox.position.y = this.position.y;
-
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
-
-        if (this.height + this.position.y + this.velocity.y >= canvas.height) {
-            this.velocity.y = 0;
-        } else {
-            this.velocity.y += gravity;
-            this.position.y += this.velocity.y;
-        }
-    }
-
-    attack() {
-        this.isAttacking = true;
-        setTimeout(() => {
-            this.isAttacking = false;
-        }, 100);
-    }
-}
-
-const player = new Sprite({
+const player = new Fighter({
     position: {
         x: 0,
         y: 0
@@ -82,13 +27,47 @@ const player = new Sprite({
         x: 0,
         y: 0
     },
-    offset: {
+    offsetAttack: {
         x: 0,
         y: 0
+    },
+    imageSrc: './resources/Samurie/Sprites/Idle.png',
+    framesMax: 8,
+    scale: 2,
+    framesHold: 5,
+    offsetImg: {
+        x: 165,
+        y: 105
+    },
+    sprites: {
+        idle: {
+            imageSrc: './resources/Samurie/Sprites/Idle.png',
+            framesMax: 8,
+        },
+        run: {
+            imageSrc: './resources/Samurie/Sprites/Run.png',
+            framesMax: 8,
+        },
+        jump: {
+            imageSrc: './resources/Samurie/Sprites/Jump.png',
+            framesMax: 2,
+        },
+        fall: {
+            imageSrc: './resources/Samurie/Sprites/Fall.png',
+            framesMax: 2,
+        },
+        attack1: {
+            imageSrc: './resources/Samurie/Sprites/Attack1.png',
+            framesMax: 6,
+        },
+        attack2: {
+            imageSrc: './resources/Samurie/Sprites/Attack2.png',
+            framesMax: 6,
+        }
     }
 });
 
-const enemy = new Sprite({
+const enemy = new Fighter({
     position: {
         x: 700,
         y: 0
@@ -98,9 +77,43 @@ const enemy = new Sprite({
         y: 0
     },
     color: 'blue',
-    offset: {
+    offsetAttack: {
         x: -50,
         y: 0
+    },
+    imageSrc: './resources/Obito/Sprites/Idle.png',
+    framesMax: 4,
+    scale: 2,
+    framesHold: 5,
+    offsetImg: {
+        x: 165,
+        y: 120
+    },
+    sprites: {
+        idle: {
+            imageSrc: './resources/Obito/Sprites/Idle.png',
+            framesMax: 4,
+        },
+        run: {
+            imageSrc: './resources/Obito/Sprites/Run.png',
+            framesMax: 8,
+        },
+        jump: {
+            imageSrc: './resources/Obito/Sprites/Jump.png',
+            framesMax: 2,
+        },
+        fall: {
+            imageSrc: './resources/Obito/Sprites/Fall.png',
+            framesMax: 2,
+        },
+        attack1: {
+            imageSrc: './resources/Obito/Sprites/Attack1.png',
+            framesMax: 4,
+        },
+        attack2: {
+            imageSrc: './resources/Obito/Sprites/Attack2.png',
+            framesMax: 4,
+        }
     }
 });
 
@@ -109,40 +122,6 @@ const keys = {
     'd': { pressed: false },
     'ArrowLeft': { pressed: false },
     'ArrowRight': { pressed: false }
-}
-
-function rectangleCollision({ rectangle1, rectangle2 }) {
-    return (
-        rectangle1.attackBox.width + rectangle1.attackBox.position.x >= rectangle2.position.x &&
-        rectangle1.attackBox.position.x <= rectangle2.position.x + rectangle2.width &&
-        rectangle1.attackBox.position.y + rectangle1.attackBox.height >= rectangle2.position.y &&
-        rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
-    )
-}
-
-function determineWinner({ player, enemy }) {
-    clearTimeout(timerID);
-    document.querySelector('#matchResultText').style.display = 'flex';
-
-    if (player.health === enemy.health) {
-        document.querySelector('#matchResultText').innerHTML = 'DRAW!';
-    } else if (player.health >= enemy.health) {
-        document.querySelector('#matchResultText').innerHTML = 'Player 1 Wins!';
-    } else {
-        document.querySelector('#matchResultText').innerHTML = 'Player 2 Wins!';
-    }
-}
-
-let timer = 60;
-let timerID;
-function decreaseTimer() {
-    if (timer > 0) {
-        timerID = setTimeout(decreaseTimer, 1000);
-        timer--;
-        document.querySelector('#fightTimer').innerHTML = timer;
-    } else {
-        determineWinner({ player, enemy });
-    }
 }
 
 decreaseTimer();
@@ -154,6 +133,7 @@ function animate() {
     // Visualize next frame
     context.fillStyle = 'black';
     context.fillRect(0, 0, canvas.width, canvas.height);
+    background.update();
     player.update();
     enemy.update();
 
@@ -162,11 +142,33 @@ function animate() {
     enemy.velocity.x = 0;
 
     // Check for key strokes
-    if (keys.a.pressed && player.lastKey == 'a') player.velocity.x = -5;
-    else if (keys.d.pressed && player.lastKey == 'd') player.velocity.x = 5;
+    if (keys.a.pressed && player.lastKey == 'a') {
+        player.setAnimation('run');
+        player.velocity.x = -5;
+    }
+    else if (keys.d.pressed && player.lastKey == 'd') {
+        player.setAnimation('run');
+        player.velocity.x = 5;
+    } else {
+        player.setAnimation('idle');
+    }
 
-    if (keys.ArrowLeft.pressed && enemy.lastKey == 'ArrowLeft') enemy.velocity.x = -5;
-    else if (keys.ArrowRight.pressed && enemy.lastKey == 'ArrowRight') enemy.velocity.x = 5;
+    if (player.velocity.y < 0) player.setAnimation('jump');
+    else if (player.velocity.y > 0) player.setAnimation('fall');
+
+    if (keys.ArrowLeft.pressed && enemy.lastKey == 'ArrowLeft') {
+        enemy.setAnimation('run');
+        enemy.velocity.x = -5;
+    }
+    else if (keys.ArrowRight.pressed && enemy.lastKey == 'ArrowRight') {
+        enemy.setAnimation('run');
+        enemy.velocity.x = 5;
+    } else {
+        enemy.setAnimation('idle');
+    }
+
+    if (enemy.velocity.y < 0) enemy.setAnimation('jump');
+    else if (enemy.velocity.y > 0) enemy.setAnimation('fall');
 
     // Detect Collision for Player
     if (rectangleCollision({ rectangle1: player, rectangle2: enemy }) && player.isAttacking) {
@@ -201,13 +203,17 @@ window.addEventListener('keydown', (event) => {
             player.velocity.y = -15;
             break;
         case ' ':
-            player.attack();
+            player.attack('attack1');
+            break;
+        case 'e':
+            player.attack('attack2');
             break;
     }
 })
 
 // Enemy Movement ~ Actions
 window.addEventListener('keydown', (event) => {
+    console.log(event.key)
     switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowRight':
@@ -218,7 +224,10 @@ window.addEventListener('keydown', (event) => {
             enemy.velocity.y = -15;
             break;
         case 'ArrowDown':
-            enemy.attack();
+            enemy.attack('attack1');
+            break;
+        case '0':
+            enemy.attack('attack2');
             break;
     }
 })
