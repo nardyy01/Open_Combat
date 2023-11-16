@@ -27,10 +27,6 @@ const player = new Fighter({
         x: 0,
         y: 0
     },
-    offsetAttack: {
-        x: 0,
-        y: 0
-    },
     imageSrc: './resources/Samurie/Sprites/Idle.png',
     framesMax: 8,
     scale: 2,
@@ -63,7 +59,23 @@ const player = new Fighter({
         attack2: {
             imageSrc: './resources/Samurie/Sprites/Attack2.png',
             framesMax: 6,
+        },
+        takeHit: {
+            imageSrc: './resources/Samurie/Sprites/Take Hit.png',
+            framesMax: 4,
+        },
+        death: {
+            imageSrc: './resources/Samurie/Sprites/Death.png',
+            framesMax: 6,
         }
+    },
+    attackBox: {
+        offset: {
+            x: 100,
+            y: 50
+        },
+        width: 110,
+        height: 50
     }
 });
 
@@ -77,10 +89,6 @@ const enemy = new Fighter({
         y: 0
     },
     color: 'blue',
-    offsetAttack: {
-        x: -50,
-        y: 0
-    },
     imageSrc: './resources/Obito/Sprites/Idle.png',
     framesMax: 4,
     scale: 2,
@@ -113,7 +121,23 @@ const enemy = new Fighter({
         attack2: {
             imageSrc: './resources/Obito/Sprites/Attack2.png',
             framesMax: 4,
+        },
+        takeHit: {
+            imageSrc: './resources/Obito/Sprites/TakeHit.png',
+            framesMax: 3,
+        },
+        death: {
+            imageSrc: './resources/Obito/Sprites/Death.png',
+            framesMax: 7,
         }
+    },
+    attackBox: {
+        offset: {
+            x: -130,
+            y: 50
+        },
+        width: 100,
+        height: 50
     }
 });
 
@@ -171,21 +195,36 @@ function animate() {
     else if (enemy.velocity.y > 0) enemy.setAnimation('fall');
 
     // Detect Collision for Player
-    if (rectangleCollision({ rectangle1: player, rectangle2: enemy }) && player.isAttacking) {
+    if (rectangleCollision({ rectangle1: player, rectangle2: enemy }) &&
+        player.isAttacking && player.framesCurrent === player.framesMax - 2) {
         player.isAttacking = false;
-        enemy.health -= 20;
-        document.querySelector('#enemyHealth').style.width = enemy.health + '%';
+        enemy.takeHit();
+        gsap.to('#enemyHealth', {
+            width: enemy.health + '%'
+        });
+    }
+
+    if (player.isAttacking && player.framesCurrent === player.framesMax - 2) {
+        player.isAttacking = false;
     }
 
     // Detect Collision for Enemy
-    if (rectangleCollision({ rectangle1: enemy, rectangle2: player }) && enemy.isAttacking) {
+    if (rectangleCollision({ rectangle1: enemy, rectangle2: player }) &&
+        enemy.isAttacking && enemy.framesCurrent === enemy.framesMax - 2) {
         enemy.isAttacking = false;
-        player.health -= 20;
-        document.querySelector('#playerHealth').style.width = player.health + '%';
+        player.takeHit();
+        gsap.to('#playerHealth', {
+            width: player.health + '%'
+        });
+    }
+
+    if (enemy.isAttacking && enemy.framesCurrent === enemy.framesMax - 2) {
+        enemy.isAttacking = false;
     }
 
     // End game based on health
     if (player.health <= 0 || enemy.health <= 0) determineWinner({ player, enemy });
+
 
 }
 
@@ -213,7 +252,6 @@ window.addEventListener('keydown', (event) => {
 
 // Enemy Movement ~ Actions
 window.addEventListener('keydown', (event) => {
-    console.log(event.key)
     switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowRight':
