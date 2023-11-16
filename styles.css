@@ -1,5 +1,6 @@
 * {
     box-sizing: border-box;
+    font-family: 'Press Start 2P', cursive;
 }
 
 .main_container {
@@ -17,13 +18,15 @@
 
 .healthBar {
     position: relative;
-    height: 30px;
     width: 100%;
+    border: 3px solid whitesmoke;
+    border-radius: 15px;
 }
 
 .greyHealth {
     background-color: rgb(54, 54, 54);
     height: 30px;
+    border-radius: 15px;
 }
 
 .currentHealth {
@@ -32,23 +35,25 @@
     right: 0;
     top: 0;
     bottom: 0;
+    border-radius: 12px;
 }
 
 .timer {
-    border-radius: 25px;
-    background-color: red;
+    border-radius: 30px;
+    background-color: black;
+    color: whitesmoke;
     height: 70px;
     width: 70px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 3px solid whitesmoke;
 }
 
 #matchResultText {
     position: absolute;
     color: whitesmoke;
-    font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: xx-large;
     display: none;
     align-items: center;

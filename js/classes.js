@@ -45,7 +45,18 @@ class Sprite {
 }
 
 class Fighter extends Sprite {
-    constructor({ position, velocity, color = 'red', offsetAttack, imageSrc, scale = 1, framesMax = 1, framesHold = 1, offsetImg, sprites }) {
+    constructor({
+        position,
+        velocity,
+        color = 'red',
+        imageSrc,
+        scale = 1,
+        framesMax = 1,
+        framesHold = 1,
+        offsetImg,
+        sprites,
+        attackBox = { offset: { x: 0, y: 0 }, width: 100, height: 50 }
+    }) {
         super({ position, imageSrc, scale, framesMax, framesHold, offsetImg });
         this.velocity = velocity;
         this.height = 150;
@@ -56,9 +67,9 @@ class Fighter extends Sprite {
                 x: this.position.x,
                 y: this.position.y
             },
-            offsetAttack,
-            width: 100,
-            height: 50
+            offsetAttack: attackBox.offset,
+            width: attackBox.width,
+            height: attackBox.height
         };
         this.color = color;
         this.isAttacking;
@@ -66,6 +77,7 @@ class Fighter extends Sprite {
         this.framesCurrent = 0;
         this.framesElapsed = 0;
         this.sprites = sprites;
+        this.alive = true;
 
         for (const sprite in this.sprites) {
             this.sprites[sprite].image = new Image();
@@ -75,34 +87,53 @@ class Fighter extends Sprite {
 
     update() {
         this.draw();
-        this.animateFrames();
-        this.attackBox.position.x = this.position.x + this.attackBox.offsetAttack.x;
-        this.attackBox.position.y = this.position.y;
+        if (this.alive) {
+            this.animateFrames();
+            this.attackBox.position.x = this.position.x + this.attackBox.offsetAttack.x;
+            this.attackBox.position.y = this.position.y + this.attackBox.offsetAttack.y;
 
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
+            this.position.x += this.velocity.x;
+            this.position.y += this.velocity.y;
 
-        if (this.height + this.position.y + this.velocity.y >= canvas.height) {
-            this.velocity.y = 0;
-            this.position.y = 426;
-        } else this.velocity.y += gravity;
+            if (this.height + this.position.y + this.velocity.y >= canvas.height) {
+                this.velocity.y = 0;
+                this.position.y = 426;
+            } else this.velocity.y += gravity;
+        }
     }
 
     attack(type) {
         this.setAnimation(type)
         this.isAttacking = true;
-        setTimeout(() => {
-            this.isAttacking = false;
-        }, 100);
+    }
+
+    takeHit() {
+        this.health -= 20;
+        if (this.health <= 0) this.setAnimation('death');
+        else this.setAnimation('takeHit');
     }
 
     setAnimation(action) {
         // Make sure the action is valid
         if (action in this.sprites) {
-            // If we are attacking, we want to complete that action first
+            /* OVERRIDES BEGIN*/
+
+            // Death
+            if (this.image === this.sprites.death.image) {
+                if (this.framesCurrent === this.framesMax - 1) this.alive = false;
+                return
+            }
+
+            // Take Hit
+            if (this.image === this.sprites.takeHit.image &&
+                this.framesCurrent < this.framesMax - 1) { return }
+
+            // Attack 
             if ((this.image === this.sprites.attack1.image ||
                 this.image === this.sprites.attack2.image) &&
                 this.framesCurrent < this.framesMax - 1) { return }
+
+            /* OVERRIDES END*/
 
             // Play requested animation
             if (this.image !== this.sprites[action].image) {
