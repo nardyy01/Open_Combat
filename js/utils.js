@@ -1,3 +1,6 @@
+const player1Position = { position: { x: 200, y: 0 }, directionFacing: 1 };
+const player2Position = { position: { x: 750, y: 0 }, directionFacing: -1 };
+
 function rectangleCollision({ rectangle1, rectangle2 }) {
     return (
         rectangle1.attackBox.width + rectangle1.attackBox.position.x >= rectangle2.position.x &&

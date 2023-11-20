@@ -10,136 +10,11 @@ context.fillRect(0, 0, canvas.width, canvas.height);
 
 const gravity = 0.7;
 
-const background = new Sprite({
-    position: {
-        x: 0,
-        y: 0
-    },
-    imageSrc: "./resources/BG_Forest.png"
-});
+const background = new Sprite(maps.darkForest);
 
-const player = new Fighter({
-    position: {
-        x: 0,
-        y: 0
-    },
-    velocity: {
-        x: 0,
-        y: 0
-    },
-    imageSrc: './resources/Samurie/Sprites/Idle.png',
-    framesMax: 8,
-    scale: 2,
-    framesHold: 5,
-    offsetImg: {
-        x: 165,
-        y: 105
-    },
-    sprites: {
-        idle: {
-            imageSrc: './resources/Samurie/Sprites/Idle.png',
-            framesMax: 8,
-        },
-        run: {
-            imageSrc: './resources/Samurie/Sprites/Run.png',
-            framesMax: 8,
-        },
-        jump: {
-            imageSrc: './resources/Samurie/Sprites/Jump.png',
-            framesMax: 2,
-        },
-        fall: {
-            imageSrc: './resources/Samurie/Sprites/Fall.png',
-            framesMax: 2,
-        },
-        attack1: {
-            imageSrc: './resources/Samurie/Sprites/Attack1.png',
-            framesMax: 6,
-        },
-        attack2: {
-            imageSrc: './resources/Samurie/Sprites/Attack2.png',
-            framesMax: 6,
-        },
-        takeHit: {
-            imageSrc: './resources/Samurie/Sprites/Take Hit.png',
-            framesMax: 4,
-        },
-        death: {
-            imageSrc: './resources/Samurie/Sprites/Death.png',
-            framesMax: 6,
-        }
-    },
-    attackBox: {
-        offset: {
-            x: 100,
-            y: 50
-        },
-        width: 110,
-        height: 50
-    }
-});
+const player = new Fighter(characters.Samurie(player1Position));
 
-const enemy = new Fighter({
-    position: {
-        x: 700,
-        y: 0
-    },
-    velocity: {
-        x: 0,
-        y: 0
-    },
-    color: 'blue',
-    imageSrc: './resources/Obito/Sprites/Idle.png',
-    framesMax: 4,
-    scale: 2,
-    framesHold: 5,
-    offsetImg: {
-        x: 165,
-        y: 120
-    },
-    sprites: {
-        idle: {
-            imageSrc: './resources/Obito/Sprites/Idle.png',
-            framesMax: 4,
-        },
-        run: {
-            imageSrc: './resources/Obito/Sprites/Run.png',
-            framesMax: 8,
-        },
-        jump: {
-            imageSrc: './resources/Obito/Sprites/Jump.png',
-            framesMax: 2,
-        },
-        fall: {
-            imageSrc: './resources/Obito/Sprites/Fall.png',
-            framesMax: 2,
-        },
-        attack1: {
-            imageSrc: './resources/Obito/Sprites/Attack1.png',
-            framesMax: 4,
-        },
-        attack2: {
-            imageSrc: './resources/Obito/Sprites/Attack2.png',
-            framesMax: 4,
-        },
-        takeHit: {
-            imageSrc: './resources/Obito/Sprites/TakeHit.png',
-            framesMax: 3,
-        },
-        death: {
-            imageSrc: './resources/Obito/Sprites/Death.png',
-            framesMax: 7,
-        }
-    },
-    attackBox: {
-        offset: {
-            x: -130,
-            y: 50
-        },
-        width: 100,
-        height: 50
-    }
-});
+const enemy = new Fighter(characters.Obito(player2Position));
 
 const keys = {
     'a': { pressed: false },
@@ -169,10 +44,12 @@ function animate() {
     if (keys.a.pressed && player.lastKey == 'a') {
         player.setAnimation('run');
         player.velocity.x = -5;
+        player.directionFacing = -1
     }
     else if (keys.d.pressed && player.lastKey == 'd') {
         player.setAnimation('run');
         player.velocity.x = 5;
+        player.directionFacing = 1
     } else {
         player.setAnimation('idle');
     }
@@ -183,10 +60,12 @@ function animate() {
     if (keys.ArrowLeft.pressed && enemy.lastKey == 'ArrowLeft') {
         enemy.setAnimation('run');
         enemy.velocity.x = -5;
+        enemy.directionFacing = -1
     }
     else if (keys.ArrowRight.pressed && enemy.lastKey == 'ArrowRight') {
         enemy.setAnimation('run');
         enemy.velocity.x = 5;
+        enemy.directionFacing = 1
     } else {
         enemy.setAnimation('idle');
     }

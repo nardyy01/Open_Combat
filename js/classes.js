@@ -1,6 +1,6 @@
 // Defines object within the game
 class Sprite {
-    constructor({ position, imageSrc, scale = 1, framesMax = 1, framesHold = 1, offsetImg = { x: 0, y: 0 } }) {
+    constructor({ position, imageSrc, scale = 1, framesMax = 1, framesHold = 1, offsetImg = { x: 0, y: 0 }, directionFacing = 1 }) {
         this.position = position
         this.width = 50;
         this.height = 150;
@@ -12,9 +12,18 @@ class Sprite {
         this.framesElapsed = 0;
         this.framesHold = framesHold;
         this.offsetImg = offsetImg;
+        this.directionFacing = directionFacing;
     }
 
     draw() {
+        context.save();
+        context.translate(
+            this.position.x + this.width / 2,
+            this.position.y + this.height / 2
+        )
+
+        context.scale(this.directionFacing, 1);
+
         // Crop the image if needed for animation
         context.drawImage(
             this.image,
@@ -22,11 +31,13 @@ class Sprite {
             0,
             this.image.width / this.framesMax,
             this.image.height,
-            this.position.x - this.offsetImg.x,
-            this.position.y - this.offsetImg.y,
+            -this.width / 2 - this.offsetImg.x,
+            -this.height / 2 - this.offsetImg.y,
             (this.image.width / this.framesMax) * this.scale,
             this.image.height * this.scale
         )
+
+        context.restore();
     }
 
     update() {
@@ -55,9 +66,10 @@ class Fighter extends Sprite {
         framesHold = 1,
         offsetImg,
         sprites,
-        attackBox = { offset: { x: 0, y: 0 }, width: 100, height: 50 }
+        attackBox = { offset: { x: 0, y: 0 }, width: 100, height: 50 },
+        directionFacing
     }) {
-        super({ position, imageSrc, scale, framesMax, framesHold, offsetImg });
+        super({ position, imageSrc, scale, framesMax, framesHold, offsetImg, directionFacing });
         this.velocity = velocity;
         this.height = 150;
         this.width = 50;
@@ -89,8 +101,14 @@ class Fighter extends Sprite {
         this.draw();
         if (this.alive) {
             this.animateFrames();
-            this.attackBox.position.x = this.position.x + this.attackBox.offsetAttack.x;
-            this.attackBox.position.y = this.position.y + this.attackBox.offsetAttack.y;
+
+            if (this.directionFacing == 1) {
+                this.attackBox.position.x = this.position.x + this.attackBox.offsetAttack.x
+                this.attackBox.position.y = this.position.y + this.attackBox.offsetAttack.y;
+            } else {
+                this.attackBox.position.x = this.position.x - (this.width + this.attackBox.offsetAttack.x)
+                this.attackBox.position.y = this.position.y + this.attackBox.offsetAttack.y;
+            }
 
             this.position.x += this.velocity.x;
             this.position.y += this.velocity.y;
