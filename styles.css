@@ -3,6 +3,13 @@
     font-family: 'Press Start 2P', cursive;
 }
 
+body {
+    display: flex;
+    justify-content: center;
+    background-color: black;
+    align-items: center;
+}
+
 .main_container {
     position: relative;
     display: inline-block;
@@ -62,4 +69,9 @@
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+canvas {
+    border: 3px solid grey;
+    border-radius: 3px;
 }
